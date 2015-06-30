@@ -1,7 +1,14 @@
-import java.io.*;
-import javax.bluetooth.*;
-import lejos.nxt.*;
-import lejos.nxt.comm.*;
+/*
+  The Reciever class runs on the robot.
+  It waits for a connection to be established via bluetooth, then moves the motor according to the keycodes sent by the initiator.
+  Compile with: nxjc Reciever.java
+  Run with: nxj -r -o Reciever.nxj Reciever
+  Note: the robot reciever class needs to be running first.
+*/
+import java.io.DataInputStream;
+import lejos.nxt.comm.Bluetooth;
+import lejos.nxt.comm.NXTConnection;
+import lejos.nxt.LCD;
 import lejos.nxt.Motor;
 import lejos.nxt.Sound;
 
@@ -16,38 +23,42 @@ class Reciever{
 	Sound.playNote(Sound.PIANO, 440, 100);
 	Sound.setVolume(0);
 	DataInputStream dis = connection.openDataInputStream();
-	//DataOutputStream dos = connection.openDataOutputStream();
-	//	Motor.B.setSpeed(500);
-	//	Motor.C.setSpeed(500);
+
 	while (true){
+	    // n contains the keycode for the pressed key
 	    int n = dis.readInt();
+	    // Escape key, stop the program and close streams
 	    if (n== 27)
 		break;
 	    LCD.clear();
 	    LCD.drawInt(n,7,0,1);
+	    // Stop action (all keys are released)
 	    if (n==-1){
 		Motor.B.stop(true);
 		Motor.C.stop(true);
 	    }
+	    // Right key
 	    if (n==39){
 		Motor.C.forward();
 		Motor.B.backward();
 	    }
+	    // Left key
 	    if (n==37){
 		Motor.B.forward();
 		Motor.C.backward();
 	    }
+	    // Up key
 	    if (n==40){
-		Motor.B.forward();//rotate(40,true);
-		Motor.C.forward();//rotate(40,true);
+		Motor.B.forward();
+		Motor.C.forward();
 	    }
+	    // Down key
 	    if (n==38){
-		Motor.B.backward();//rotate(-40,true);
-		Motor.C.backward();//rotate(-40,true);
+		Motor.B.backward();
+		Motor.C.backward();
 	    }
 	}
 	dis.close();
-	//dos.close();
 	connection.close();
     }
 }
